@@ -13,18 +13,18 @@ import com.skype.User;
 public class CleverBotChatMessageListener implements ChatMessageListener{
 	ArrayList<ChatterBotSession>sessions=new ArrayList<ChatterBotSession>();
 	ArrayList<User>locks=new ArrayList<User>();
-	String[]userIgnoreList={""};
+	String[]userIgnoreList={};
 	ChatterBotFactory factory = new ChatterBotFactory();
 	public void chatMessageReceived(ChatMessage message) throws SkypeException {
-		System.out.println("[DEBUG] Message received");
+		//System.out.println("[DEBUG] Message received");
 		String thought;
 		boolean found=false;
 		Chat c=message.getChat();
-		String display=message.getSenderDisplayName();
+		String display=message.getSender().getFullName();
 		for (String name:userIgnoreList){
 			if (display.contains(name)){ System.out.println("Message sender is on ignore list! ABORT!"); return; }
 		}
-		System.out.printf("Incoming chat:\n[%s:%s]\n\n",display,message.getContent());
+		//System.out.printf("Incoming chat:\n[%s:%s]\n\n",display,message.getContent());
 		for (ChatterBotSession s:sessions){
 			if ((s.getOwner().equals(display))&&(!isIn(locks,message.getSender()))){
 				locks.add(message.getSender());
@@ -32,8 +32,9 @@ public class CleverBotChatMessageListener implements ChatMessageListener{
 				found=true;
 				try {
 					thought=s.think(message.getContent());
-					c.send(thought);
+					message.getChat().send(thought);
 					removeIn(locks,message.getSender());
+					System.out.printf("Sending thought back to sender:\n[%s > %s]\n\n",s,display);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -61,13 +62,15 @@ public class CleverBotChatMessageListener implements ChatMessageListener{
 				e.printStackTrace();
 			}
 			System.out.printf("Sending thought back to sender:\n[%s > %s]\n\n",s,display);
-			c.send(s);
+			message.getChat().send(s);
 			removeIn(locks,message.getSender());
 		}
 	}
 
 	public void chatMessageSent(ChatMessage message) throws SkypeException {
-
+		//System.out.println("Message sent");
+		//Chat c=message.getChat();
+		//c.send(message.getContent()+"x2");
 	}
 	public static boolean isIn(ArrayList<User>a,User b){
 		for (Object c:a){
@@ -77,8 +80,8 @@ public class CleverBotChatMessageListener implements ChatMessageListener{
 	}
 	public static void removeIn(ArrayList<User>a,User b){ //??????
 		for (int i=a.size()-1; i> -1; i--) {			  //do not touch, magic
-		    if (a.get(i).equals(b) ) {
-		        a.remove(i);
+		    if (a.get(i).equals(b) ) {					  //if not used, concurrent
+		        a.remove(i);							  //modification error
 		    }
 		}
 	}
