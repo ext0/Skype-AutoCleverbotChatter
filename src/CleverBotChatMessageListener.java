@@ -14,8 +14,8 @@ public class CleverBotChatMessageListener implements ChatMessageListener{
 	ArrayList<ChatterBotSession>sessions=new ArrayList<ChatterBotSession>();
 	ArrayList<User>locks=new ArrayList<User>();
 	String[]userIgnoreList={};
-	String prefix="> ";
-	String suffix=" [https://goo.gl/jVkzdM]";
+	String prefix="*";
+	String suffix="*";
 	ChatterBotFactory factory = new ChatterBotFactory();
 	public void chatMessageReceived(ChatMessage message) throws SkypeException {
 		//System.out.println("[DEBUG] Message received");
@@ -36,7 +36,7 @@ public class CleverBotChatMessageListener implements ChatMessageListener{
 					thought=s.think(message.getContent());
 					message.getChat().send(prefix+thought+suffix);
 					removeIn(locks,message.getSender());
-					System.out.printf("Sending thought back to sender:\n[%s > %s]\n\n",s,display);
+					System.out.printf("Sending thought back to sender:\n[%s > %s]\n\n",thought,display);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
