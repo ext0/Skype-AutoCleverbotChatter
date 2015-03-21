@@ -57,6 +57,7 @@ public class CleverBotChatMessageListener implements ChatMessageListener{
 				e.printStackTrace();
 			}
 			sessions.add(bot1.createSession(display));
+			System.out.printf("Session created for %s\n",sessions.get(sessions.size()-1).getOwner());
 			String s=null;
 			try {
 				s = sessions.get(sessions.size()-1).think(message.getContent());

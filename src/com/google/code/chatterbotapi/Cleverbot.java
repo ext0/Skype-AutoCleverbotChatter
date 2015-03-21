@@ -34,6 +34,9 @@ class Cleverbot implements ChatterBot {
     public ChatterBotSession createSession(String owner) {
         return new Session(owner);
     }
+    public String getOwner(){
+    	return owner;
+    }
     
     private class Session implements ChatterBotSession {
         private final Map<String, String> vars;
